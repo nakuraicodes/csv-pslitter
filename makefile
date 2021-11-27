@@ -1,6 +1,6 @@
 CC = g++ -std=c++17
 CFLAGS = -Wall -MD
-INCLUDES = 
+INCLUDES = -I./src/headers
 LIBS = 
 
 # INCLUDES = -I./src/headers -I./lib/iup/include
@@ -10,7 +10,7 @@ LIBS =
 # 	$(CC) $(PROG).cpp -o $(PROG).exe $(GTK_4_INCLUDES)
 
 
-OBJS = main.o
+OBJS = main.o splitter.o
 # link
 csv-splitter: $(OBJS)
 	$(CC) $(INCLUDES) $(CFLAGS) $(OBJS) $(LIBS) -o $@.exe 

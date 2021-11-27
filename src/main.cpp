@@ -1,15 +1,14 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <cstring>
 #include <filesystem>
 
+#include "./headers/splitter.h"
+
 std::string splitArgument(std::string argument);
-std::string getFilename(std::string filePath);
-std::string getFolderPath(std::string filePath);
 
 int main(int argc, char* argv[]){
-    int mbSize = 0;
+    long long unsigned int maxSize = 0;
     std::string folderPath = "";
     std::string fileName = "";
     std::string fileNameWoExtension = "";
@@ -18,7 +17,7 @@ int main(int argc, char* argv[]){
         std::string helpText = "\n\n### CSV SPLITTER ###\nThis program helps you split a big csv file into "
         "multiple smaller ones. It is useful to handle sizes too big "
         "to load in Excel.\n\nArguments list:\n\t- size: max size "
-        "of an individual chunks, in MB\n\t- path: the path to the file. "
+        "of an individual chunks, in bytes\n\t- path: the path to the file. "
         "You must have writing permission to the containing folder."
         "\n\nex: csv-splitter --size=10 --path=/path/to/file.csv\n\n";
         std::cout << helpText;
@@ -31,7 +30,7 @@ int main(int argc, char* argv[]){
                 
                 if(arg.find("--size=") != std::string::npos){
                     std::string sSize = splitArgument(arg);
-                    mbSize = stoi(sSize);
+                    maxSize = stoi(sSize);
                 }
                 else if(arg.find("--path=") != std::string::npos){
                     filePath = splitArgument(arg);
@@ -44,12 +43,12 @@ int main(int argc, char* argv[]){
             }
             // at this point all the required options should be known, throwing 
             // an exception if it's not the case
-            if(mbSize == 0 || filePath == ""){
+            if(maxSize == 0 || filePath == ""){
                 throw "Missing options. Use -h option to list all options.";
             } 
 
             // Creating the destination folder
-            
+            splitFile(filePath, maxSize);
 
         }
         catch (const std::invalid_argument& ia) {
@@ -69,7 +68,6 @@ int main(int argc, char* argv[]){
 
     }
 
-
     return 0;
 }
 
@@ -85,26 +83,4 @@ std::string splitArgument(std::string argument){
         }
     }
     return value;
-}
-
-std::string getFilename(std::string filePath){
-    int sepIndex = filePath.find_last_of("/");
-    if((unsigned)sepIndex == std::string::npos){
-        sepIndex = filePath.find_last_of("\\");
-    }
-    if((unsigned)sepIndex == std::string::npos){
-        throw "Impossible to extract filename";
-    }
-    return filePath.substr(sepIndex+1);
-}
-
-std::string getFolderPath(std::string filePath){
-    int sepIndex = filePath.find_last_of("/");
-    if((unsigned)sepIndex == std::string::npos){
-        sepIndex = filePath.find_last_of("\\");
-    }
-    if((unsigned)sepIndex == std::string::npos){
-        throw "Impossible to extract filename";
-    }
-    return filePath.substr(0, sepIndex);
 }
